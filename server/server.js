@@ -1,8 +1,9 @@
 require('./config/config');
 
-const express = require('express')
-const app = express()
-const bodyParser = require('body-parser')
+const express = require('express');
+const app = express();
+const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }))
@@ -10,43 +11,13 @@ app.use(bodyParser.urlencoded({ extended: false }))
 // parse application/json
 app.use(bodyParser.json())
 
-//Peticion para obtener registros
-app.get('/usuario', function(req, res) {
-    res.json('get Usuario')
-})
+app.use(require('./routes/usuario'));
 
-//Peticion para crear registros
-app.post('/usuario', function(req, res) {
+mongoose.connect(process.env.URLDB, (err, res) => {
 
-    let body = req.body;
-
-    if (body.nombre === undefined) {
-        res.status(400).json({
-            ok: false,
-            mensaje: 'El nombre es necesario'
-        });
-
-    } else {
-        res.json({
-            usuario: body
-        });
-    }
-
-})
-
-//Peticion para actualizar registros
-app.put('/usuario/:id', function(req, res) {
-
-    let id = req.params.id;
-    res.json({
-        id
-    })
-})
-
-//Peticion para cambiar de estado registros
-app.delete('/usuario', function(req, res) {
-    res.json('delete Usuario')
-})
+    if (err) throw err;
+    console.log('conexion exitosa');
+});
 app.listen(process.env.PORT, () => {
-    console.log(`Escuchando el puerto`, process.env.PORT);
+    console.log('Escuchando puerto: ', process.env.PORT);
 });
